@@ -1,0 +1,106 @@
+
+repositories {
+    mavenLocal()
+    jcenter()
+    mavenCentral()
+    maven { url 'https://dl.bintray.com/kotlin/exposed' }
+    maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
+    maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+}
+
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'net.corda.plugins.cordformation'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'net.corda.plugins.quasar-utils'
+
+archivesBaseName = 'webserver'
+version = '0.1'
+
+test {
+    //jvmArgs '-Xms1024m -Xmx2048m'
+    minHeapSize = "1024m"
+    maxHeapSize = "2048m"
+    
+    // show standard out and standard error of the test JVM(s) on the console
+    //testLogging.showStandardStreams = true
+    // listen to events in the test execution lifecycle
+    beforeTest { descriptor ->
+       logger.lifecycle("Running test: " + descriptor)
+    }
+    // listen to standard out and standard error of the test JVM(s)
+    onOutput { descriptor, event ->
+       if(event.destination == TestOutputEvent.Destination.StdErr)
+           logger.lifecycle("Test: " + descriptor + " produced standard err: " + event.message )
+    }
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir "../config/dev"
+        }
+    }
+}
+
+// See https://docs.spring.io/dependency-management-plugin/docs/current/reference/html
+dependencyManagement {
+    dependencies {
+        dependency "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version"
+    }
+}
+
+dependencies {
+    testCompile "junit:junit:$junit_version"
+
+    // Corda dependencies.
+    compile "net.corda:corda-core:$corda_release_version"
+    compile "net.corda:corda-jackson:$corda_release_version"
+    String jackson = '2.9.7'
+    implementation "com.fasterxml.jackson.core:jackson-core:${jackson}"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:${jackson}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jackson}"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:${jackson}"
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin:${jackson}")
+    compile "net.corda:corda-rpc:$corda_release_version"
+    compile "net.corda:corda:$corda_release_version"
+    testCompile "net.corda:corda-node-driver:$corda_release_version"
+
+    compile("org.springframework.boot:spring-boot-starter-websocket:$spring_boot_version") {
+        exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+    }
+    compile "org.springframework.boot:spring-boot-starter-log4j2:$spring_boot_version"
+    testCompile "org.springframework.boot:spring-boot-starter-test:$spring_boot_version"
+    compile("org.springframework.boot:spring-boot-starter-actuator:$spring_boot_version") {
+        exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+    }
+    compile "org.apache.logging.log4j:log4j-web:$log4j_version"
+
+    cordapp project(":workflows-java")
+    cordapp project(":contracts-java")
+
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-parameters" // Required by Corda's serialisation framework.
+}
+
+task runPartyAServer(type: JavaExec, dependsOn: jar) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'net.corda.training.webserver.Server'
+    args '--server.port=10009', '--config.rpc.host=localhost', '--config.rpc.port=10008', '--config.rpc.username=user1', '--config.rpc.password=password'
+}
+
+task runPartyBServer(type: JavaExec, dependsOn: jar) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'net.corda.training.webserver.Server'
+    args '--server.port=10012', '--config.rpc.host=localhost', '--config.rpc.port=10011', '--config.rpc.username=user1', '--config.rpc.password=password'
+}
+
+task runPartyCServer(type: JavaExec, dependsOn: jar) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'net.corda.training.webserver.Server'
+    args '--server.port=10015', '--config.rpc.host=localhost', '--config.rpc.port=10014', '--config.rpc.username=user1', '--config.rpc.password=password'
+}
+
+

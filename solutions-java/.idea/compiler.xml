@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="com.template.java-source.main" target="1.8" />
+      <module name="com.template.java-source.test" target="1.8" />
+      <module name="com.template.kotlin-source.main" target="1.8" />
+      <module name="com.template.kotlin-source.test" target="1.8" />
+      <module name="corda-training-solutions.java-source.main" target="1.8" />
+      <module name="corda-training-solutions.java-source.test" target="1.8" />
+      <module name="corda-training-solutions.kotlin-source.main" target="1.8" />
+      <module name="corda-training-solutions.kotlin-source.test" target="1.8" />
+      <module name="ps-training-java-migration.contracts-kotlin.main" target="1.8" />
+      <module name="ps-training-java-migration.contracts-kotlin.test" target="1.8" />
+      <module name="ps-training-java-migration.workflows-kotlin.integrationTest" target="1.8" />
+      <module name="ps-training-java-migration.workflows-kotlin.main" target="1.8" />
+      <module name="ps-training-java-migration.workflows-kotlin.test" target="1.8" />
+      <module name="solutions-java.webserver-java.main" target="1.8" />
+      <module name="solutions-java.webserver-java.test" target="1.8" />
+      <module name="solutions-java.webserver-kotlin.main" target="1.8" />
+      <module name="solutions-java.webserver-kotlin.test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-parameters" />
+  </component>
+</project>
