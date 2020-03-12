@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static net.corda.core.contracts.ContractsDSL.requireThat;
-import static net.corda.training.contract.IOUContract.Commands.Issue;
 
 /**
  * This is the flow which handles issuance of new IOUs on the ledger.
